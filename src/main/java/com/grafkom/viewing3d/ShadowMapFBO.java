@@ -1,40 +1,43 @@
 package com.grafkom.viewing3d;
 
-import static org.lwjgl.opengl.GL30.*;
+import java.nio.ByteBuffer;
 
-/** Framebuffer Object berisi Depth Texture sebagai Shadow Map (Render Pass 1). */
+import static org.lwjgl.opengl.GL33.*;
+
 public class ShadowMapFBO {
-    private final int fboID;
-    private final int depthTextureID;
-    private final int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+    private final int fboId;
+    private final int depthTextureId;
+    private final int width = 2048;
+    private final int height = 2048;
 
     public ShadowMapFBO() {
-        fboID = glGenFramebuffers();
-        depthTextureID = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, depthTextureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SHADOW_WIDTH, SHADOW_HEIGHT, 0,
-                GL_DEPTH_COMPONENT, GL_FLOAT, (java.nio.ByteBuffer) null);
+        fboId = glGenFramebuffers();
+        depthTextureId = glGenTextures();
+
+        glBindTexture(GL_TEXTURE_2D, depthTextureId);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+                GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float[] borderColor = {1.0f, 1.0f, 1.0f, 1.0f}; // di luar frustum cahaya = tidak berbayang
+        float[] borderColor = {1.0f, 1.0f, 1.0f, 1.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureID, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureId, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            throw new IllegalStateException("Shadow FBO tidak lengkap");
+            throw new IllegalStateException("Shadow map FBO tidak lengkap");
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public void bindForWriting() {
-        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+        glViewport(0, 0, width, height);
+        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
         glClear(GL_DEPTH_BUFFER_BIT);
     }
 
@@ -43,17 +46,8 @@ public class ShadowMapFBO {
         glViewport(0, 0, screenWidth, screenHeight);
     }
 
-    public void bindForReading(int unit) {
+    public void bindDepthTexture(int unit) {
         glActiveTexture(GL_TEXTURE0 + unit);
-        glBindTexture(GL_TEXTURE_2D, depthTextureID);
-    }
-
-    public int getDepthTextureID() {
-        return depthTextureID;
-    }
-
-    public void cleanup() {
-        glDeleteFramebuffers(fboID);
-        glDeleteTextures(depthTextureID);
+        glBindTexture(GL_TEXTURE_2D, depthTextureId);
     }
 }

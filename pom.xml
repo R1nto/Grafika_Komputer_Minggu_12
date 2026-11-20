@@ -5,48 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.grafkom</groupId>
-    <artifactId>visual-realism-suite</artifactId>
-    <version>1.0</version>
+    <artifactId>ThreeDViewing</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lwjgl.version>3.3.4</lwjgl.version>
-        <joml.version>1.10.8</joml.version>
-        <!-- diisi otomatis oleh profile OS di bawah -->
-        <lwjgl.natives>natives-windows</lwjgl.natives>
-        <jvm.extra>-Dvisual.realism=1</jvm.extra>
+        <maven.compiler.release>17</maven.compiler.release>
+        <exec.mainClass>com.grafkom.viewing3d.VisualRealismApp</exec.mainClass>
+        <lwjgl.version>3.3.3</lwjgl.version>
+        <joml.version>1.10.5</joml.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>lwjgl-natives-windows</id>
-            <activation><os><family>windows</family></os></activation>
-            <properties><lwjgl.natives>natives-windows</lwjgl.natives></properties>
-        </profile>
-        <profile>
-            <id>lwjgl-natives-linux</id>
-            <activation><os><family>unix</family><name>Linux</name></os></activation>
-            <properties><lwjgl.natives>natives-linux</lwjgl.natives></properties>
-        </profile>
-        <profile>
-            <id>lwjgl-natives-macos-intel</id>
-            <activation><os><family>mac</family><arch>x86_64</arch></os></activation>
-            <properties>
-                <lwjgl.natives>natives-macos</lwjgl.natives>
-                <jvm.extra>-XstartOnFirstThread</jvm.extra>
-            </properties>
-        </profile>
-        <profile>
-            <id>lwjgl-natives-macos-arm</id>
-            <activation><os><family>mac</family><arch>aarch64</arch></os></activation>
-            <properties>
-                <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
-                <jvm.extra>-XstartOnFirstThread</jvm.extra>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -54,27 +23,30 @@
                 <groupId>org.lwjgl</groupId>
                 <artifactId>lwjgl-bom</artifactId>
                 <version>${lwjgl.version}</version>
-                <scope>import</scope>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId></dependency>
-
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId><classifier>${lwjgl.natives}</classifier></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId><classifier>${lwjgl.natives}</classifier></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId><classifier>${lwjgl.natives}</classifier></dependency>
-        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId><classifier>${lwjgl.natives}</classifier></dependency>
-
+        <!-- JOML (Matematika Vektor & Matriks 3D) -->
         <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>${joml.version}</version>
         </dependency>
+
+        <!-- LWJGL Core, GLFW (Window), OpenGL, & STB (Image Loader) -->
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId></dependency>
+
+        <!-- Native Binaries Windows (ganti natives-linux / natives-macos jika non-Windows) -->
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId><classifier>natives-windows</classifier></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId><classifier>natives-windows</classifier></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId><classifier>natives-windows</classifier></dependency>
+        <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId><classifier>natives-windows</classifier></dependency>
     </dependencies>
 </project>
